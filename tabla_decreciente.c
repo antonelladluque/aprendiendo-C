@@ -9,17 +9,25 @@ int main(){
   1
 */
 
-int c,i, j;
+    int c, i, j;
 
-printf("Ingrese un valor mayor a 0: ");
-scanf("%d", &c);
+    // El bucle "hacer-mientras" garantiza que se ejecute al menos una vez
+    do {
+        printf("Ingrese un valor mayor a 0: ");
+        scanf("%d", &c);
+        
+        if (c <= 0) {
+            printf("Error: El numero debe ser positivo.\n");
+        }
+    } while (c <= 0); // Se repite si el usuario pone 0 o negativos
 
-for (i=c ; i>=1 ; i--){
-  for(j=1 ; j<=i ; j++){
-    printf("%d", j);
-  }
-  printf("\n");
-}
+    // lógica original del patrón
+    for (i = c; i >= 1; i--) {
+        for (j = 1; j <= i; j++) {
+            printf("%d ", j); // Añadí un espacio para que no se amontonen
+        }
+        printf("\n");
+    }
 
-return 0;
+    return 0;
 }
