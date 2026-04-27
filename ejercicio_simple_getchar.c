@@ -1,4 +1,6 @@
-/*Escribe un programa que lea caracteres uno por uno desde el teclado. Si el carácter es una letra minúscula, debe mostrarla en mayúscula. Si es cualquier otro carácter (número, símbolo o espacio), lo debe mostrar tal cual. El programa debe detenerse cuando el usuario presione la tecla Enter.*/
+/*Escribe un programa que lea caracteres uno por uno desde el teclado. Si el carácter es una letra minúscula, 
+debe mostrarla en mayúscula. Si es cualquier otro carácter (número, símbolo o espacio), lo debe mostrar tal cual. 
+El programa debe detenerse cuando el usuario presione la tecla Enter.*/
 
 #include <stdio.h>
 
