@@ -12,6 +12,7 @@ struct Videojuego {
 void ordenarPorCodigo(struct Videojuego inventario[], int cantidad);
 void listarSinStock(struct Videojuego inventario[], int cantidad);
 void buscarVideojuegoPorCodigo(struct Videojuego inventario[], int cantidad);
+void ordenarPorCodigoDeMayorAMenor(struct Videojuego inventario[], int cantidad)
 
 int main() {
     struct Videojuego inventario[100];
@@ -106,4 +107,20 @@ void buscarVideojuegoPorCodigo(struct Videojuego inventario[], int cantidad) {
 }
 
 	
-
+void ordenarPorCodigoDeMayorAMenor(struct Videojuego inventario[], int cantidad)
+{
+  struct Videojuego aux;
+  for (int i = 0; i < cantidad - 1; i++)
+  {
+    for (int j = 0; j < cantidad - i - 1; j++)
+    {
+      // CAMBIO AQUÍ: Cambiamos '>' por '<'
+      if (inventario[j].codigo < inventario[j + 1].codigo)
+      {
+        aux = inventario[j];
+        inventario[j] = inventario[j + 1];
+        inventario[j + 1] = aux;
+      }
+    }
+  }
+}
