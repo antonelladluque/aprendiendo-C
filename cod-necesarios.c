@@ -83,3 +83,27 @@ void listarPiezasPorPosicion(struct Pieza piezas[], int cantidad){
         	printf("Pieza %d - Posicion: (%d,%d),piezas[i].posicion[0], piezas[i].posicion[1]);
 }}
 //-----------------------------------------
+
+				// Listar piezas ordenadas de arriba a abajo (filas) y de izquierda a derecha (columnas)
+void listarPiezasPorPosicion(struct Pieza piezas[], int cantidad)
+{
+// PASO 1: Usamos el ordenador que ya tenés hecho para que las acomode
+ordenarPiezas(piezas, cantidad);
+
+// PASO 2: Imprimimos un cartel de bienvenida
+printf("\n--- PIEZAS ORDENADAS POR SU LUGAR EN EL TABLERO ---\n");
+
+// Con este bucle caminamos desde la primera pieza (0) hasta la última (cantidad)
+for (int i = 0; i < cantidad; i++)
+{
+// Mostramos en pantalla: la Fila, la Columna, el Tipo (peón, torre...) y el Color
+printf("En la posicion (%d, %d) hay un/a: %s (%c)\n",
+piezas[i].posicion[0], // Esto es la Fila
+piezas[i].posicion[1], // Esto es la Columna
+piezas[i].tipo, // El nombre de la pieza
+piezas[i].color); // 'b' o 'n'
+}
+
+printf("---------------------------------------------------\n");
+}
+
