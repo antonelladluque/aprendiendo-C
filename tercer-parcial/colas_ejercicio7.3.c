@@ -1,40 +1,43 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Estructura con la información requerida
+typedef struct {
+    int dni;
+    char nombreApellido[100];
+    char linkProyecto[200];
+} ProyectoAlumno;
+
+// Nodo de la Cola
 typedef struct NodoCola {
-    int dato;
+    ProyectoAlumno info;
     struct NodoCola* sgte;
 } NodoCola;
 
+// Estructura de control para la Cola
 typedef struct {
     NodoCola* frente;
     NodoCola* fin;
-} Cola;
+} ColaProyectos;
 
-// Devuelve un arreglo dinámico con los primeros k elementos
-int* obtenerKElementos(Cola* cola, int k, int* tamanoSalida) { // 
-    // Primero contamos cuántos elementos reales hay para validar
-    NodoCola* aux = cola->frente;
-    int cont = 0;
-    while (aux != NULL) {
-        cont++;
-        aux = aux->sgte;
+// Función para inicializar la cola
+void inicializarCola(ColaProyectos* q) {
+    q->frente = NULL;
+    q->fin = NULL;
+}
+
+// Función para encolar (Queue / Insertar al final)
+void encolarProyecto(ColaProyectos* q, ProyectoAlumno proyecto) {
+    NodoCola* nuevo = (NodoCola*)malloc(sizeof(NodoCola));
+    nuevo->info = proyecto;
+    nuevo->sgte = NULL;
+    
+    if (q->fin == NULL) { // Si la cola estaba vacía
+        q->frente = nuevo;
+        q->fin = nuevo;
+    } else {
+        q->fin->sgte = nuevo;
+        q->fin = nuevo;
     }
-    
-    if (cont < k) { // 
-        printf("Mensaje: La cola tiene menos de %d elementos. El tamaño actual es %d.\n", k, cont); // 
-        *tamanoSalida = 0;
-        return NULL;
-    }
-    
-    int* resultado = (int*)malloc(k * sizeof(int));
-    *tamanoSalida = k;
-    
-    // Desencolamos los primeros k elementos
-    for (int i = 0; i < k; i++) {
-        NodoCola* borrar = cola->frente;
-        resultado[i] = borrar->dato;
-        cola->frente = cola->frente->sgte;
-        if (cola->frente == NULL) cola->fin = NULL;
-        free(borrar);
-    }
-    
-    return resultado;
 }
