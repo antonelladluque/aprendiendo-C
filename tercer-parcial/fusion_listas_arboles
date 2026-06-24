@@ -1,0 +1,285 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+// Estructura del nodo de la lista simplemente enlazada para almacenar caracteres (letras)
+typedef struct NodoLista {
+	char letra;
+	struct NodoLista* sgte;
+} NodoLista;
+
+// Procedimiento para insertar un elemento de tipo char al final de la lista
+void insertarAlFinal(NodoLista** inicio, char nuevaLetra) {
+	//  Reservar memoria dinámica en el Heap para el nuevo nodo
+	NodoLista* nuevoNodo = (NodoLista*)malloc(sizeof(NodoLista));
+	if (nuevoNodo == NULL) {
+		printf("Error: No hay memoria suficiente en el sistema.\n");
+		exit(1);
+	}
+	nuevoNodo->letra = nuevaLetra;
+	nuevoNodo->sgte = NULL; // Al insertarse al final, su siguiente siempre es NULL
+	
+	// Si la lista está completamente vacía, el nuevo nodo pasa a ser el inicio
+	if (*inicio == NULL) {
+		*inicio = nuevoNodo;
+	} 
+	//  Si ya contiene elementos, recorremos la lista con un puntero auxiliar
+	else {
+		NodoLista* aux = *inicio;
+		while (aux->sgte != NULL) {
+			aux = aux->sgte; // Avanzamos hasta el último nodo real de la cadena
+		}
+		aux->sgte = nuevoNodo; // Enlazamos el que era el último nodo con el recién creado
+	}
+}
+
+// Funcion que busca y devuelve el caracter almacenado en una posición especifica (indice basado en 0)
+char recuperarElemento(NodoLista* inicio, int posicion) {
+	NodoLista* aux = inicio;
+	int contador = 0;
+	
+	// Recorremos la lista secuencialmente mientras el nodo actual sea valido
+	while (aux != NULL) {
+		if (contador == posicion) {
+			return aux->letra; // Posicion encontrada: devolvemos la letra
+		}
+		aux = aux->sgte; // Avanzamos al siguiente eslabon
+		contador++;
+	}
+	return '\0'; // Si la posición excede el tamaño actual, retornamos el caracter nulo como control
+}
+
+// Función iterativa que cuenta cuantos elementos validos existen en la lista
+int contarElementos(NodoLista* inicio) {
+	int contador = 0;
+	NodoLista* aux = inicio;
+	
+	while (aux != NULL) {
+		contador++;      // Incrementamos el contador por cada nodo recorrido
+		aux = aux->sgte; // Avanzamos en la estructura
+	}
+	return contador;
+}
+
+// Procedimiento auxiliar encargado de imprimir los eslabones actuales de la lista por pantalla
+void mostrarLista(NodoLista* inicio) {
+	NodoLista* aux = inicio;
+	printf("\n--- ELEMENTOS ACTUALES EN LA LISTA ---\n");
+	if (aux == NULL) {
+		printf("La lista se encuentra vacia.\n");
+	} else {
+		while (aux != NULL) {
+			printf("[%c] -> ", aux->letra); // Imprimimos la carga util del nodo actual
+			aux = aux->sgte;
+		}
+		printf("NULL\n"); // Fin visual de la secuencia enlazada
+	}
+	printf("--------------------------------------\n");
+}
+
+// Procedimiento para liberar de manera limpia la memoria dinamica ocupada por la lista
+void liberarLista(NodoLista* inicio) {
+	NodoLista* actual = inicio;
+	while (actual != NULL) {
+		NodoLista* proximo = actual->sgte; // Resguardamos el enlace al nodo siguiente antes de destruir el actual
+		free(actual);                      // Liberamos el nodo actual
+		actual = proximo;                  // Avanzamos al nodo resguardado
+	}
+}
+
+
+
+// Estructura del nodo jerarquico para el arbol binario que almacena valores enteros
+typedef struct NodoArbol {
+	int info;
+	struct NodoArbol* izq; // Puntero al subárbol o hijo izquierdo
+	struct NodoArbol* der; // Puntero al subárbol o hijo derecho
+} NodoArbol;
+
+// Función para inicializar y configurar los campos de un nuevo nodo del árbol en memoria
+NodoArbol* crearNodoArbol(int valor) {
+	NodoArbol* nuevo = (NodoArbol*)malloc(sizeof(NodoArbol));
+	if (nuevo == NULL) {
+		printf("Error: Fallo la asignacion de memoria para el arbol.\n");
+		exit(1);
+	}
+	nuevo->info = valor;
+	nuevo->izq = NULL; // Por defecto se inicializa de manera aislada sin hijos
+	nuevo->der = NULL;
+	return nuevo;
+}
+
+// Función recursiva interactiva que le solicita al usuario los datos para armar la topología del árbol
+NodoArbol* construirArbolInteractivo() {
+	int valor;
+	char respuesta;
+	
+	printf("Ingrese el valor entero para este nodo del arbol: ");
+	scanf("%d", &valor);
+	
+	// Instanciamos el nodo base actual
+	NodoArbol* nuevoNodo = crearNodoArbol(valor);
+	
+	// Consulta jerárquica para la bifurcación izquierda
+	printf("¿El nodo [%d] tiene hijo IZQUIERDO? (s/n): ", valor);
+	scanf(" %c", &respuesta); // El espacio previo en " %c" limpia residuos del buffer del teclado
+	if (respuesta == 's' || respuesta == 'S') {
+		nuevoNodo->izq = construirArbolInteractivo(); // Llamada recursiva: construye la rama izquierda profunda
+	}
+	
+	// Consulta jerárquica para la bifurcación derecha
+	printf("¿El nodo [%d] tiene hijo DERECHO? (s/n): ", valor);
+	scanf(" %c", &respuesta);
+	if (respuesta == 's' || respuesta == 'S') {
+		nuevoNodo->der = construirArbolInteractivo(); // Llamada recursiva: construye la rama derecha profunda
+	}
+	
+	return nuevoNodo; // Retorna la dirección del nodo completamente enlazado hacia arriba
+}
+
+// Recorrido Preorden Recursivo: Evalúa Primero la Raíz, luego va a la Izquierda y por último a la Derecha
+void preorden(NodoArbol* raiz) {
+	if (raiz != NULL) {
+		printf("%d ", raiz->info); // Procesa Raíz
+		preorden(raiz->izq);       // Va a la Izquierda
+		preorden(raiz->der);       // Va a la Derecha
+	}
+}
+
+// Recorrido Inorden Recursivo: Va a la Izquierda, Procesa la Raíz en el medio y luego va a la Derecha
+void inorden(NodoArbol* raiz) {
+	if (raiz != NULL) {
+		inorden(raiz->izq);        // Va a la Izquierda
+		printf("%d ", raiz->info); // Procesa Raíz
+		inorden(raiz->der);        // Va a la Derecha
+	}
+}
+
+// Recorrido Postorden Recursivo: Recorre Izquierda, Recorre Derecha y al Final procesa la Raíz actual
+void postorden(NodoArbol* raiz) {
+	if (raiz != NULL) {
+		postorden(raiz->izq);      // Va a la Izquierda
+		postorden(raiz->der);      // Va a la Derecha
+		printf("%d ", raiz->info); // Procesa Raíz
+	}
+}
+
+// Procedimiento recursivo para liberar la memoria del árbol utilizando lógica Postorden (de abajo hacia arriba)
+void liberarArbol(NodoArbol* raiz) {
+	if (raiz != NULL) {
+		liberarArbol(raiz->izq); // Primero liberamos sus ramificaciones inferiores
+		liberarArbol(raiz->der);
+		free(raiz);              // Finalmente liberamos el contenedor padre
+	}
+}
+
+
+// ============================================================================
+// PROGRAMA PRINCIPAL (PUNTO DE ENTRADA CON SWITCH INTERACTIVO)
+// ============================================================================
+int main() {
+	// Inicialización de las variables de control principales
+	NodoLista* miLista = NULL;
+	NodoArbol* miArbol = NULL;
+	
+	int opcion;
+	char letraIngresada;
+	int posicionBuscada;
+	char letraRecuperada;
+
+	
+	// Inicializamos el árbol al arrancar el programa de manera interactiva para tener datos con qué trabajar en los recorridos
+	printf("Cargar de datos para el  Arbol Binario:\n");
+	miArbol = construirArbolInteractivo();
+	
+	// Bucle do-while que mantiene la consola activa hasta que se decida finalizar la ejecución
+	do {
+		printf("\n======================================================\n");
+		printf("             MENU DE OPERACIONES DISPONIBLES          \n");
+		printf("======================================================\n");
+		printf("1. Ejecutar Recorrido en INORDEN (Arbol)\n");
+		printf("2. Ejecutar Recorrido en PREORDEN (Arbol)\n");
+		printf("3. Ejecutar Recorrido en POSTORDEN (Arbol)\n");
+		printf("4. Insertar un elemento (Letra) al final de la Lista\n");
+		printf("5. Recuperar un elemento de la Lista por su posicion\n");
+		printf("6. Devolver el numero de objetos totales en la Lista\n");
+		printf("7. Salir del programa\n");
+		printf("------------------------------------------------------\n");
+		printf("Seleccione una opcion (1-7): ");
+		scanf("%d", &opcion);
+		
+		// Sentencia SWITCH solicitada para derivar el flujo operativo según la opción escogida
+		switch(opcion) {
+		case 1:
+			printf("\n-> Recorrido Inorden: ");
+			if (miArbol == NULL) printf("El arbol esta vacio.");
+			else inorden(miArbol);
+			printf("\n");
+			break;
+			
+		case 2:
+			printf("\n-> Recorrido Preorden: ");
+			if (miArbol == NULL) printf("El arbol esta vacio.");
+			else preorden(miArbol);
+			printf("\n");
+			break;
+			
+		case 3:
+			printf("\n-> Recorrido Postorden: ");
+			if (miArbol == NULL) printf("El arbol esta vacio.");
+			else postorden(miArbol);
+			printf("\n");
+			break;
+			
+		case 4:
+			printf("\nIngrese la letra (char) que desea almacenar en la lista: ");
+			scanf(" %c", &letraIngresada);
+			insertarAlFinal(&miLista, letraIngresada);
+			printf("¡Letra '%c' agregada con exito!\n", letraIngresada);
+			
+			// REQUERIMIENTO COMPLEMENTARIO: Mostrar los elementos actuales de la lista inmediatamente después de operar
+			mostrarLista(miLista);
+			break;
+			
+		case 5:
+			// Evaluamos primero si la lista tiene datos antes de buscar para evitar operaciones infructuosas
+			if (miLista == NULL) {
+				printf("\nLa lista esta vacia. Inserte elementos primero (Opcion 4).\n");
+			} else {
+				printf("\nIngrese el indice de la posicion a consultar (0 para el primero): ");
+				scanf("%d", &posicionBuscada);
+				
+				letraRecuperada = recuperarElemento(miLista, posicionBuscada);
+				if (letraRecuperada != '\0') {
+					printf("-> EXITO: El elemento recuperado en la posicion %d es: '%c'\n", posicionBuscada, letraRecuperada);
+				} else {
+					printf("-> ERROR: La posicion %d no existe en la lista actualmente.\n", posicionBuscada);
+				}
+			}
+			// REQUERIMIENTO COMPLEMENTARIO: Mostrar los elementos actuales de la lista
+			mostrarLista(miLista);
+			break;
+			
+		case 6:
+			printf("\n-> Cantidad de objetos almacenados en la lista actualmente: %d\n", contarElementos(miLista));
+			
+			// REQUERIMIENTO COMPLEMENTARIO: Mostrar los elementos actuales de la lista
+			mostrarLista(miLista);
+			break;
+			
+		case 7:
+			printf("\nLiberando recursos asignados y cerrando el sistema... ¡Exitos en el Coloquio!\n");
+			break;
+			
+		default:
+			printf("\n[!] Opcion no valida. Seleccione un numero de opcion que este dentro del rango 1-7.\n");
+		}
+		
+	} while(opcion != 7); // Condicion de permanencia del bucle iterativo general
+	
+	// GARANTIA DE BUENAS PRACTICAS: Vaciamos y devolvemos la memoria dinamica al sistema operativo antes de cerrar
+	liberarLista(miLista);
+	liberarArbol(miArbol);
+	
+	return 0;
+}
